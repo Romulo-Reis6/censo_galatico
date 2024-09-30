@@ -1,13 +1,20 @@
-const getAllPlanets = async () => {
-  const response = await fetch('https://swapi.dev/api/planets');
-  const data = await response.json();
-  return data.results;
+const getPlanets = async (page) => {
+  const response = await fetch(`https://swapi.dev/api/planets/?page${page}`);
+  const { results: data } = await response.json();
+
+  const currentData = JSON.parse(localStorage.getItem('planets'));
+  const newPage = { page, data };
+  const newData = currentData ? [...currentData, newPage] : [newPage];
+
+  localStorage.setItem('planets', JSON.stringify(newData));
 };
 
+const createCards = () => {
+
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-  const planetsExists = localStorage.getItem('planets') ? true : false;
-  if (!planetsExists) {
-    const planets = await getAllPlanets();
-    localStorage.setItem('planets', JSON.stringify(planets));
+  if (!localStorage.getItem('planets')) {
+    await getPlanets(1);
   }
 });
